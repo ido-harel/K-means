@@ -41,9 +41,9 @@ def main():
         sys.exit(1)
 
     try:
+        if not sys.argv[1].lstrip('+').isdigit():
+            raise ValueError  # strict digit-only check, mirrors C's strtol (rejects "3.0", "1e1", "3 ")
         K = int(sys.argv[1])
-        if str(K) != sys.argv[1]:
-            raise ValueError  # rejects non-integers like "3.5" or "3 " that int() would otherwise accept
     except ValueError:
         print("Incorrect number of clusters!")
         sys.exit(1)
@@ -51,9 +51,9 @@ def main():
     max_iter = 400  # default per spec when iter arg is omitted
     if len(sys.argv) == 3:
         try:
+            if not sys.argv[2].lstrip('+').isdigit():
+                raise ValueError  # same strict digit-only guard as K, applied to iter
             max_iter = int(sys.argv[2])
-            if str(max_iter) != sys.argv[2]:
-                raise ValueError  # same non-integer guard as K, applied to iter
         except ValueError:
             print("Incorrect maximum iteration!")
             sys.exit(1)
@@ -72,10 +72,25 @@ def main():
 
     # read datapoints from stdin: one point per line, coordinates comma-separated
     datapoints = []
+    d = None  # dimension of the first row; every later row must match it
     for line in sys.stdin:
         line = line.strip()
         if line:
-            datapoints.append([float(x) for x in line.split(',')])
+            try:
+                point = [float(x) for x in line.split(',')]
+            except ValueError:
+                print("An Error Has Occurred")
+                sys.exit(1)
+            if d is None:
+                d = len(point)
+            elif len(point) != d:
+                print("An Error Has Occurred")
+                sys.exit(1)
+            datapoints.append(point)
+
+    if len(datapoints) == 0:
+        print("An Error Has Occurred")
+        sys.exit(1)
 
     N = len(datapoints)  # only known now that stdin has been fully consumed
 
