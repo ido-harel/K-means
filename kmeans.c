@@ -345,7 +345,7 @@ int update_centroids(double *centroids, const double *sums, const int *counts, i
     double epsilon_squared;
     int converged;
 
-    converged = 1; /* need to ask Yael if we need all to converge or only one is enough */
+    converged = 1; 
     epsilon_squared = epsilon * epsilon;
     for (i = 0; i < k; i++) {
         delta_squared = 0.0;
@@ -417,7 +417,6 @@ int main(int argc, char **argv)
     DataSet data;
     double *centroids;
 
-    /* 1. Read Command Line & Check for Typos */
     parse_status = parse_args(argc, argv, &k, &iter);
     if (parse_status == 1) {
         printf("An Error Has Occurred\n");
@@ -430,20 +429,17 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    /* 2. Turn on the Vacuum (Read Data) */
     if (!read_data(&data)) {
         printf("An Error Has Occurred\n");
         return 1;
     }
 
-    /* 3. The Final Security Check (K < N) */
     if (k >= data.rows) {
         printf("Incorrect number of clusters!\n");
         free_dataset(&data);
         return 1;
     }
 
-    /* 4. Start the Engine */
     centroids = init_centroids(&data, k);
     if (centroids == NULL) {
         printf("An Error Has Occurred\n");
@@ -457,14 +453,10 @@ int main(int argc, char **argv)
         free_dataset(&data);
         return 1;
     }
-
-    /* 5. Print the Results */
     print_centroids(centroids, k, data.cols);
 
-    /* 6. Call the Janitor (Clean up and exit successfully) */
     free(centroids);
     free_dataset(&data);
-
     return 0;
 }
 
