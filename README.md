@@ -1,2 +1,2 @@
-# HW1 Eyal & Ido
+# HW1
 
